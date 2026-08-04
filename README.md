@@ -636,7 +636,7 @@ golden_dataset.json (15 Q&A)
 | `Tran Hoai Nam` | _(điền)_ | Role 2 — Data & Pipeline | Task 1 (thu thập PDF), Task 4 (chunking + ChromaDB), Task 7 (reranking), Task 9 (pipeline + fallback), tích hợp Streamlit | ✅ Hoàn thành |
 | `higo-ai` | _(điền)_ | Role 3 — Retrieval & Fallback | Task 2 (Crawl4AI), Task 5 (semantic + HyDE), Task 7 (RRF), Task 8 (PageIndex vectorless) | ✅ Hoàn thành |
 | `Dienamyte` | _(điền)_ | Role 4 — Evaluation & QA | `golden_dataset.json` (15 Q&A), `eval_pipeline.py` (RAGAS), báo cáo `results.md` + so sánh A/B | ✅ Hoàn thành |
-| `MinhCris` | _(điền)_ | Role 1 — Team Leader & RAG Architect | Ghép code tổng hợp, `src/supervisor.py`, Task 10 (generation có citation), rà soát cuối | ✅ Hoàn thành |
+| `Đoàn Đình Đông` | _(điền)_ | Role 1 — Team Leader & RAG Architect | Ghép code tổng hợp, `src/supervisor.py`, Task 10 (generation có citation), rà soát cuối | ✅ Hoàn thành |
 
 ---
 

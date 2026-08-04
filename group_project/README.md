@@ -112,7 +112,7 @@ Chi tiết đầy đủ (ingestion + evaluation) xem `README.md` ở thư mục 
 | `Tran Hoai Nam` | _(điền)_ | Role 2 — Data & Pipeline | Task 1, 4, 7, 9 + tích hợp Streamlit | ✅ |
 | `higo-ai` | _(điền)_ | Role 3 — Retrieval & Fallback | Task 2, 5 (HyDE), 7 (RRF), 8 (PageIndex) | ✅ |
 | `Dienamyte` | _(điền)_ | Role 4 — Evaluation & QA | `golden_dataset.json`, `eval_pipeline.py`, `results.md` | ✅ |
-| `MinhCris` | _(điền)_ | Role 1 — Team Leader & Architect | `supervisor.py`, Task 10, ghép code, rà soát | ✅ |
+| `doandinhdong14-afk` | _(điền)_ | Role 1 — Team Leader & Architect | `supervisor.py`, Task 10, ghép code, rà soát | ✅ |
 
 ---
 
