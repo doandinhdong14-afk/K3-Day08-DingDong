@@ -30,30 +30,22 @@ DATA_DIR = Path(__file__).parent.parent / "data" / "landing" / "legal"
 def setup_directory():
     """Tạo thư mục data/landing/legal/ nếu chưa có và kiểm tra các file PDF."""
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    print(f"[OK] Thư mục đã sẵn sàng: {DATA_DIR}")
-    
     files = [f for f in DATA_DIR.iterdir() if f.suffix.lower() in ('.pdf', '.docx')]
-    print(f"[OK] Đã tìm thấy {len(files)} văn bản trong thư mục:")
+    print(f"[OK] Thu muc san sang: {DATA_DIR} ({len(files)} van ban)")
     for f in files:
         print(f"  - {f.name}")
 
 
-# TODO: Tải file PDF/DOCX về DATA_DIR
-# Có thể tải thủ công hoặc viết script download nếu có direct link.
-#
-# Ví dụ nếu có direct link:
-#
-# import requests
-#
-# def download_file(url: str, filename: str):
-#     response = requests.get(url)
-#     filepath = DATA_DIR / filename
-#     filepath.write_bytes(response.content)
-#     print(f"✓ Đã tải: {filepath}")
-#
-# Nếu trang là HTML thuần (không phải PDF sẵn), có thể convert nội dung text
-# thành PDF đơn giản bằng thư viện fpdf2 (đã có trong requirements.txt).
+def verify_and_collect_docs() -> list[Path]:
+    """Kiểm tra và trả về danh sách các văn bản pháp lý đã thu thập."""
+    setup_directory()
+    files = [f for f in DATA_DIR.iterdir() if f.suffix.lower() in ('.pdf', '.docx')]
+    if len(files) < 3:
+        print(f"[CANH BAO] Can toi thieu 3 van ban, hien co {len(files)} file.")
+    else:
+        print(f"[HOAN THANH Task 1] Da thu thap du {len(files)} van ban quy dinh PDF/DOCX.")
+    return files
 
 
 if __name__ == "__main__":
-    setup_directory()
+    verify_and_collect_docs()
