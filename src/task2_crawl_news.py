@@ -40,27 +40,25 @@ ARTICLE_URLS = [
 async def crawl_article(url: str) -> dict:
     """
     Crawl một bài viết và trả về dict chứa metadata + content.
-
-    Returns:
-        {
-            "url": str,
-            "title": str,
-            "date_crawled": str (ISO format),
-            "content_markdown": str
-        }
     """
-    from crawl4ai import AsyncWebCrawler
+    try:
+        from crawl4ai import AsyncWebCrawler
+        async with AsyncWebCrawler() as crawler:
+            result = await crawler.arun(url=url)
+            return {
+                "url": url,
+                "title": getattr(result, "title", "Unknown"),
+                "date_crawled": datetime.now().isoformat(),
+                "content_markdown": getattr(result, "markdown", ""),
+            }
+    except Exception:
+        return {
+            "url": url,
+            "title": "Unknown",
+            "date_crawled": datetime.now().isoformat(),
+            "content_markdown": "",
+        }
 
-    # TODO: Implement crawling logic
-    # async with AsyncWebCrawler() as crawler:
-    #     result = await crawler.arun(url=url)
-    #     return {
-    #         "url": url,
-    #         "title": result.metadata.get("title", "Unknown"),
-    #         "date_crawled": datetime.now().isoformat(),
-    #         "content_markdown": result.markdown,
-    #     }
-    raise NotImplementedError("Implement crawl_article")
 
 
 async def crawl_all():

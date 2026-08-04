@@ -22,6 +22,10 @@ pageindex_pdfs/
 .vscode/
 .idea/
 
+# Database / Vector store
+chroma_db/
+
 # OS
 .DS_Store
 Thumbs.db
+
