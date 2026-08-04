@@ -1,0 +1,10 @@
+# Quy trình nộp đơn phúc khảo bài thi kết thúc học phần NTTU
+
+**Source:** https://ntt.edu.vn/tin-tuc/quy-dinh-phuc-khao-bai-thi-nttu
+**Crawled:** 2026-08-04T12:33:49.075909
+
+---
+
+# Quy trình nộp đơn phúc khảo bài thi kết thúc học phần NTTU
+
+Sau khi công bố điểm thi kết thúc môn, sinh viên có quyền nộp đơn xin chấm phúc khảo bài thi trong vòng 7 ngày làm việc. Lệ phí chấm phúc khảo sẽ được hoàn lại nếu điểm số sau chấm phúc khảo thay đổi theo hướng tăng lên.

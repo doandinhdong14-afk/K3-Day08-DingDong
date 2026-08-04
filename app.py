@@ -57,8 +57,15 @@ with st.sidebar:
     top_k = st.slider("Số chunks retrieval (top_k)", 3, 10, 5)
 
     st.divider()
-    st.caption("**Kiến trúc hệ thống:**")
-    st.caption("Hybrid Retrieval (Semantic + BM25) → RRF Rerank → PageIndex Fallback → LLM Generation có Citation")
+    st.subheader("🔍 Kiến trúc Supervisor Router")
+    st.markdown("""
+    Hệ thống sử dụng cơ chế định tuyến **Supervisor** thông minh:
+    * **Bước 1:** Nhận câu hỏi và tính toán điểm tương đồng Cosine gốc.
+    * **Bước 2 (Routing):**
+        * **Nếu Score >= 0.48:** Kích hoạt **Hybrid Search** (gộp kết quả tìm kiếm Ngữ nghĩa & BM25 bằng **RRF Rerank**).
+        * **Nếu Score < 0.48 (Câu hỏi lạc đề/rác):** Tự động chuyển hướng sang **PageIndex Fallback** để tìm kiếm cấu trúc tài liệu.
+    * **Bước 3 (Generation):** Tổng hợp câu trả lời thông qua LLM Gemini kèm trích dẫn nguồn (**Citation**).
+    """)
 
 # =============================================================================
 # SESSION STATE
