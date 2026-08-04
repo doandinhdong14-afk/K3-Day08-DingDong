@@ -80,16 +80,6 @@ def reorder_for_llm(chunks: list[dict]) -> list[dict]:
     Input order (by score):  [1, 2, 3, 4, 5]
     Output order:            [1, 3, 5, 4, 2]
     (best first, worst in middle, second-best last)
-
-    Args:
-        chunks: List sorted by score descending (from retrieval)
-
-    Returns:
-        List reordered để maximize LLM attention.
-    """
-def reorder_for_llm(chunks: list[dict]) -> list[dict]:
-    """
-    Sắp xếp chunks để tránh "lost in the middle" effect.
     """
     if len(chunks) <= 2:
         return chunks
@@ -97,6 +87,7 @@ def reorder_for_llm(chunks: list[dict]) -> list[dict]:
     front = chunks[::2]
     back = chunks[1::2]
     return front + back[::-1]
+
 
 
 def format_context(chunks: list[dict]) -> str:
