@@ -40,16 +40,39 @@ CHROMA_DIR = Path(__file__).parent.parent / "chroma_db"
 # CONFIGURATION — Giải thích lựa chọn của bạn trong comment
 # =============================================================================
 
-# TODO: Chọn chunking strategy và giải thích vì sao
-CHUNK_SIZE = 500        # Vì sao chọn 500? ...
-CHUNK_OVERLAP = 50      # Vì sao chọn 50? ...
+# --- Chunking ---
+# CHUNKING_METHOD = "recursive": corpus gồm PDF quy định đã qua MarkItDown, heading
+# bị mất cấu trúc khá nhiều (bảng biểu, PDF 2 cột) nên MarkdownHeaderTextSplitter tách
+# không ổn định. RecursiveCharacterTextSplitter cắt theo ranh giới đoạn → câu → từ,
+# an toàn với mọi chất lượng đầu vào. SemanticChunker phải embed toàn corpus 2 lần,
+# không đáng cho 180 phút của bài lab.
+#
+# CHUNK_SIZE = 500: các quy định trong corpus (mức phí, hạn nộp, điều kiện học bổng)
+# gói gọn trong 1-2 đoạn ngắn. Chunk 500 ký tự giữ trọn một điều khoản mà không kéo
+# theo điều khoản lân cận — chunk to hơn (800-1000) làm loãng vector và kéo tụt
+# context_precision vì mỗi chunk chứa nhiều chủ đề.
+#
+# CHUNK_OVERLAP = 50 (10% của size): đủ để một câu bị cắt ngang vẫn xuất hiện trọn
+# vẹn ở một trong hai chunk kề nhau, mà không phình số chunk quá nhiều.
+#
+# Lưu ý: LAB_GUIDE gợi ý 800/100. Nhóm đo thực tế trên corpus này và chọn 500/50;
+# toàn bộ số liệu trong group_project/evaluation/results.md (573 chunks) chạy với
+# tham số 500/50. Đổi tham số ở đây thì phải xoá chroma_db/, index lại VÀ chạy lại eval.
+CHUNK_SIZE = 500
+CHUNK_OVERLAP = 50
 CHUNKING_METHOD = "recursive"  # "recursive" | "markdown_header" | "semantic"
 
-# TODO: Chọn embedding model và giải thích
-EMBEDDING_MODEL = "BAAI/bge-m3"  # Vì sao? Multilingual, tốt cho tiếng Việt lẫn tiếng Anh
+# --- Embedding ---
+# BAAI/bge-m3: multilingual thật sự (không phải model Anh dịch sang), xử lý tốt corpus
+# song ngữ Việt–Anh của bài lab — tài liệu RMIT trộn lẫn tiếng Anh (Tuition Fees) và
+# tiếng Việt, còn câu hỏi của sinh viên hầu hết bằng tiếng Việt. all-MiniLM-L6-v2 nhẹ
+# hơn nhiều nhưng gần như chỉ hiểu tiếng Anh nên miss câu hỏi tiếng Việt.
+EMBEDDING_MODEL = "BAAI/bge-m3"
 EMBEDDING_DIM = 1024
 
-# TODO: Chọn vector store
+# --- Vector store ---
+# ChromaDB: persistent local, không cần Docker/cloud, hỗ trợ sẵn cosine space.
+# Weaviate có hybrid search built-in nhưng cần Docker — không phù hợp máy sinh viên.
 VECTOR_STORE = "chromadb"  # "chromadb" | "weaviate" | "faiss"
 COLLECTION_NAME = "university_services_docs"
 

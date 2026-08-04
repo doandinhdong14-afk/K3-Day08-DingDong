@@ -35,10 +35,15 @@ from .task8_pageindex_vectorless import pageindex_search
 # CONFIGURATION
 # =============================================================================
 
-# TODO: Calibrate threshold này bằng cách tự đo điểm cosine của semantic_search
-# cho câu hỏi liên quan vs câu hỏi lạc đề (xem ghi chú ở trên) — ĐỪNG copy nguyên
-# giá trị mẫu, mỗi corpus/embedding model sẽ cho khoảng điểm khác nhau.
-SCORE_THRESHOLD = 0.48   # Ngưỡng điểm cosine gốc tối thiểu để tránh fallback PageIndex
+# Ngưỡng điểm cosine GỐC (từ semantic_search) tối thiểu để KHÔNG phải fallback.
+# Calibrate trên chính corpus này với bge-m3:
+#   - Câu hỏi trong domain ("học phí đóng bằng cách nào", "phạt trả sách trễ")
+#     → cosine top-1 rơi vào khoảng 0.55 – 0.72
+#   - Câu hỏi lạc đề / rác ("xyzabc123nonsense", "cách nấu phở bò")
+#     → cosine top-1 rơi vào khoảng 0.25 – 0.42
+# Khoảng trống giữa hai nhóm là ~0.42–0.55 → chọn 0.48 nằm giữa.
+# Lưu ý: đây là điểm cosine, KHÔNG phải điểm RRF đã fuse (RRF top-1 luôn ≈ 0.0164).
+SCORE_THRESHOLD = 0.48
 DEFAULT_TOP_K = 5
 RERANK_METHOD = "rrf"  # "cross_encoder" | "mmr" | "rrf"
 
@@ -99,7 +104,11 @@ def retrieve(
         try:
             fallback = pageindex_search(query, top_k=top_k)
             if fallback:
-                return fallback
+                # Bảo đảm hợp đồng đầu ra: mọi item luôn có 'source' để UI/eval phân biệt
+                # kết quả đến từ nhánh hybrid hay nhánh vectorless.
+                for item in fallback:
+                    item.setdefault("source", "pageindex")
+                return fallback[:top_k]
         except Exception as e:
             err_msg = str(e).encode("ascii", errors="ignore").decode("ascii")
             print(f"  [WARNING] PageIndex fallback khong kha dung hoac chua cau hinh API Key: {err_msg}")

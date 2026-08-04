@@ -66,7 +66,8 @@ def pageindex_search(query: str, top_k: int = 5, debug: bool = False) -> List[Di
         List of {
             'content': str,
             'score': float,
-            'metadata': dict
+            'metadata': dict,
+            'source': 'pageindex'   # marker để Task 9 / UI biết kết quả đến từ nhánh fallback
         }
     """
     if not PAGEINDEX_API_KEY or "your_pageindex" in PAGEINDEX_API_KEY:
@@ -111,8 +112,10 @@ def pageindex_search(query: str, top_k: int = 5, debug: bool = False) -> List[Di
                                 "metadata": {
                                     "doc_id": doc_id,
                                     "section_title": sec_title,
-                                    "source": "pageindex_vectorless",
+                                    "source": doc_id,
+                                    "type": "pageindex_vectorless",
                                 },
+                                "source": "pageindex",
                             }
                         )
 
@@ -124,6 +127,7 @@ def pageindex_search(query: str, top_k: int = 5, debug: bool = False) -> List[Di
                         "content": item.get("content", item.get("text", "")),
                         "score": float(item.get("score", 0.0)),
                         "metadata": item.get("metadata", {"source": "pageindex"}),
+                        "source": "pageindex",
                     }
                 )
 

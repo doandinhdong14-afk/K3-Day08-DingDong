@@ -9,6 +9,47 @@ Yêu cầu:
     - Phải tương thích với embedding model và vector store ở Task 4
 """
 
+# Cache module-level: bge-m3 nặng ~2.2GB, load lại mỗi lần gọi mất ~15s và đó là
+# phần lớn thời gian chạy eval (xem results.md, đề xuất cải thiện #4). Cache không
+# làm đổi kết quả — cùng model, cùng vector, cùng thứ hạng.
+_MODEL = None
+_COLLECTION = None
+
+
+def _task4_config():
+    """Lấy config của Task 4, chạy được cả `python -m src.task5...` lẫn chạy trực tiếp."""
+    try:
+        from .task4_chunking_indexing import CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL
+    except ImportError:
+        from task4_chunking_indexing import CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL
+    return EMBEDDING_MODEL, COLLECTION_NAME, CHROMA_DIR
+
+
+def _get_model():
+    """Load (một lần) SentenceTransformer dùng chung cho mọi truy vấn."""
+    global _MODEL
+    if _MODEL is None:
+        from sentence_transformers import SentenceTransformer
+
+        embedding_model, _, _ = _task4_config()
+        _MODEL = SentenceTransformer(embedding_model)
+    return _MODEL
+
+
+def _get_collection():
+    """Mở (một lần) collection ChromaDB đã index ở Task 4."""
+    global _COLLECTION
+    if _COLLECTION is None:
+        import chromadb
+
+        _, COLLECTION_NAME, CHROMA_DIR = _task4_config()
+        client = chromadb.PersistentClient(path=str(CHROMA_DIR))
+        _COLLECTION = client.get_or_create_collection(
+            name=COLLECTION_NAME,
+            metadata={"hnsw:space": "cosine"},
+        )
+    return _COLLECTION
+
 
 def generate_hypothetical_document(query: str) -> str:
     """
@@ -76,23 +117,14 @@ def semantic_search(query: str, top_k: int = 10, use_hyde: bool = False) -> list
         }
         Sorted by score descending.
     """
-    import chromadb
-    from sentence_transformers import SentenceTransformer
-    from .task4_chunking_indexing import EMBEDDING_MODEL, COLLECTION_NAME, CHROMA_DIR
-
     # Nếu bật HyDE, tạo tài liệu giả định trước khi tìm kiếm ngữ nghĩa
     search_query = generate_hypothetical_document(query) if use_hyde else query
 
-    # Khởi tạo model và chuyển câu hỏi sang vector
-    model = SentenceTransformer(EMBEDDING_MODEL)
-    query_vector = model.encode(search_query).tolist()
+    # Chuyển câu hỏi sang vector (model đã cache ở module level)
+    query_vector = _get_model().encode(search_query).tolist()
 
     # Truy vấn cơ sở dữ liệu vector ChromaDB
-    client = chromadb.PersistentClient(path=str(CHROMA_DIR))
-    collection = client.get_or_create_collection(
-        name=COLLECTION_NAME,
-        metadata={"hnsw:space": "cosine"},
-    )
+    collection = _get_collection()
 
     results = collection.query(
         query_embeddings=[query_vector],

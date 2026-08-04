@@ -25,13 +25,24 @@ LANDING_DIR = Path(__file__).parent.parent / "data" / "landing"
 OUTPUT_DIR = Path(__file__).parent.parent / "data" / "standardized"
 
 
-def convert_legal_docs():
-    """Convert PDF/DOCX files trong data/landing/legal/ sang markdown."""
+def convert_legal_docs() -> tuple[int, list[str]]:
+    """
+    Convert PDF/DOCX files trong data/landing/legal/ sang markdown.
+
+    Returns:
+        (số file convert thành công, danh sách tên file bị bỏ qua)
+
+    Lưu ý: MarkItDown chỉ trích được text layer của PDF. PDF scan (ảnh chụp văn bản)
+    sẽ trả về chuỗi rỗng — không phải lỗi code mà là bản chất file đầu vào. Muốn đưa
+    những file đó vào corpus thì phải OCR trước (vd `ocrmypdf input.pdf output.pdf`)
+    rồi chạy lại task này.
+    """
     legal_dir = LANDING_DIR / "legal"
     output_dir = OUTPUT_DIR / "legal"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     md = MarkItDown()
+    converted, skipped = 0, []
 
     for filepath in legal_dir.iterdir():
         if filepath.suffix.lower() in (".pdf", ".docx", ".doc"):
@@ -42,20 +53,26 @@ def convert_legal_docs():
                 output_path = output_dir / f"{filepath.stem}.md"
                 if content:
                     output_path.write_text(content, encoding="utf-8")
-                    print(f"  [OK] Saved: {output_path} ({len(content)} chars)")
+                    print(f"  [OK] Saved: {output_path.name} ({len(content)} chars)")
+                    converted += 1
                 else:
                     if output_path.exists():
                         output_path.unlink()
-                    print(f"  [WARNING] Skipped empty conversion for {filepath.name}")
+                    print(f"  [WARNING] Khong trich duoc text (PDF scan?) - bo qua: {filepath.name}")
+                    skipped.append(filepath.name)
             except Exception as e:
                 print(f"  [ERROR] Failed to convert {filepath.name}: {e}")
+                skipped.append(filepath.name)
+
+    return converted, skipped
 
 
-def convert_news_articles():
+def convert_news_articles() -> int:
     """Convert JSON crawled articles trong data/landing/news/ sang markdown."""
     news_dir = LANDING_DIR / "news"
     output_dir = OUTPUT_DIR / "news"
     output_dir.mkdir(parents=True, exist_ok=True)
+    converted = 0
 
     for filepath in news_dir.iterdir():
         if filepath.suffix.lower() == ".json":
@@ -70,9 +87,12 @@ def convert_news_articles():
 
                 content = header + data.get("content_markdown", "")
                 output_path.write_text(content, encoding="utf-8")
-                print(f"  [OK] Saved: {output_path}")
+                print(f"  [OK] Saved: {output_path.name}")
+                converted += 1
             except Exception as e:
                 print(f"  [ERROR] Failed to convert {filepath.name}: {e}")
+
+    return converted
 
 
 def convert_all():
@@ -82,12 +102,20 @@ def convert_all():
     print("=" * 50)
 
     print("\n--- Legal Documents ---")
-    convert_legal_docs()
+    legal_ok, legal_skipped = convert_legal_docs()
 
     print("\n--- News Articles ---")
-    convert_news_articles()
+    news_ok = convert_news_articles()
 
-    print("\n[OK] Done! Output tại:", OUTPUT_DIR)
+    print("\n" + "=" * 50)
+    print(f"[TONG KET] legal: {legal_ok} converted, {len(legal_skipped)} bo qua | news: {news_ok} converted")
+    if legal_skipped:
+        print("\n[CANH BAO] Cac file sau KHONG co trong corpus (khong trich duoc text):")
+        for name in legal_skipped:
+            print(f"  - {name}")
+        print("  -> Nhieu kha nang la PDF scan. Chay OCR truoc neu can dua vao corpus:")
+        print("     pip install ocrmypdf && ocrmypdf --language vie input.pdf output.pdf")
+    print(f"\n[OK] Done! Output tai: {OUTPUT_DIR}")
 
 
 if __name__ == "__main__":

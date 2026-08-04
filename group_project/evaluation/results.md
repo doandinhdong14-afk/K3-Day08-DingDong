@@ -115,9 +115,13 @@
 **`B_dense_only`** — source_recall 100%, 0 câu không lấy được tài liệu đúng.
   - Nguồn chiếm nhiều chunk nhất trong kết quả: `hoc-phi-va-cac-khoan-thu.md` (42/75 = 56%).
 
-**Đề xuất cải thiện:**
+**Đề xuất cải thiện (còn mở):**
 
 1. **Giới hạn số chunk mỗi tài liệu trong kết quả cuối** (ví dụ tối đa 2 chunk/file) hoặc đổi `RERANK_METHOD` sang `mmr`. Corpus hiện mất cân bằng nặng — `hoc-phi-va-cac-khoan-thu.md` chiếm 412/573 chunk (72%), nên nó áp đảo cả dense lẫn BM25 và đẩy các tài liệu nhỏ ra khỏi top_k.
 2. **Tăng `top_k` không giải quyết được triệt để** — đã đo: với câu hỏi eSIM, top_k=8 vẫn không lấy được đúng tài liệu.
 3. **Chuẩn hoá dấu tiếng Việt cho nhánh BM25** — BM25 khớp token chính xác nên truy vấn không dấu không bao giờ match được văn bản có dấu.
-4. **Cache SentenceTransformer trong `task5_semantic_search`** — hiện mỗi lần gọi `semantic_search()` lại load lại bge-m3 (~15s/lần), là phần lớn thời gian chạy eval.
+
+**Đã triển khai sau lần đo này:**
+
+4. ✅ **Cache SentenceTransformer trong `task5_semantic_search`** — trước đây mỗi lần gọi `semantic_search()` lại load bge-m3 (~15s/lần), chiếm phần lớn thời gian chạy eval. Nay model và ChromaDB collection được cache ở module level. Đây là tối ưu thuần hiệu năng: cùng model, cùng vector, **không làm đổi thứ hạng** nên các số liệu ở trên vẫn còn hiệu lực.
+5. ✅ **Supervisor + workers song song** (`src/supervisor.py`) — chạy đồng thời dense / sparse / HyDE / query-expansion rồi gộp bằng RRF. Đây là nhánh retrieval MỚI, chưa được đo trong bảng A/B trên; cần thêm làm config C rồi chạy lại eval.

@@ -83,7 +83,7 @@ def load_golden_dataset() -> list[dict]:
 # CONFIGS để so sánh A/B
 # =============================================================================
 
-CONFIGS = {
+ALL_CONFIGS = {
     "A_hybrid_rerank": {
         "label": "Hybrid (dense + BM25) + RRF rerank",
         "mode": "hybrid",
@@ -96,7 +96,21 @@ CONFIGS = {
         "top_k": 5,
         "use_reranking": False,
     },
+    # Config C chưa nằm trong lần chạy đã báo cáo ở results.md. Bật bằng cách thêm
+    # "C_supervisor" vào ACTIVE_CONFIGS bên dưới. Lưu ý: mỗi câu hỏi tốn thêm 1 lượt
+    # gọi LLM cho query expansion + 1 cho HyDE, rất dễ chạm rate limit của free tier.
+    "C_supervisor": {
+        "label": "Supervisor song song (dense + BM25 + HyDE + query expansion) + RRF",
+        "mode": "supervisor",
+        "top_k": 5,
+        "use_reranking": True,
+    },
 }
+
+# Các config thực sự được chạy khi gọi script. So sánh A/B là yêu cầu tối thiểu.
+ACTIVE_CONFIGS = ["A_hybrid_rerank", "B_dense_only"]
+
+CONFIGS = {name: ALL_CONFIGS[name] for name in ACTIVE_CONFIGS}
 
 
 def retrieve_for_config(question: str, config: dict) -> list[dict]:
@@ -108,6 +122,11 @@ def retrieve_for_config(question: str, config: dict) -> list[dict]:
         for r in results:
             r.setdefault("source", "dense")
         return results
+
+    if config["mode"] == "supervisor":
+        from src.supervisor import supervisor_retrieve
+
+        return supervisor_retrieve(question, top_k=config["top_k"])
 
     from src.task9_retrieval_pipeline import retrieve
 
@@ -428,7 +447,7 @@ def _recommendations(comparison: dict) -> str:
             lines.append("  - Câu miss: " + ", ".join(f"`{r['id']}`" for r in miss))
         lines.append("")
 
-    lines.append("**Đề xuất cải thiện:**\n")
+    lines.append("**Đề xuất cải thiện (còn mở):**\n")
     lines.append("1. **Giới hạn số chunk mỗi tài liệu trong kết quả cuối** (ví dụ tối đa 2 chunk/file) "
                  "hoặc đổi `RERANK_METHOD` sang `mmr`. Corpus hiện mất cân bằng nặng — "
                  "`hoc-phi-va-cac-khoan-thu.md` chiếm 412/573 chunk (72%), nên nó áp đảo cả dense "
@@ -437,8 +456,16 @@ def _recommendations(comparison: dict) -> str:
                  "top_k=8 vẫn không lấy được đúng tài liệu.")
     lines.append("3. **Chuẩn hoá dấu tiếng Việt cho nhánh BM25** — BM25 khớp token chính xác nên "
                  "truy vấn không dấu không bao giờ match được văn bản có dấu.")
-    lines.append("4. **Cache SentenceTransformer trong `task5_semantic_search`** — hiện mỗi lần gọi "
-                 "`semantic_search()` lại load lại bge-m3 (~15s/lần), là phần lớn thời gian chạy eval.")
+
+    lines.append("\n**Đã triển khai sau lần đo này:**\n")
+    lines.append("4. ✅ **Cache SentenceTransformer trong `task5_semantic_search`** — trước đây mỗi "
+                 "lần gọi `semantic_search()` lại load bge-m3 (~15s/lần), chiếm phần lớn thời gian "
+                 "chạy eval. Nay model và ChromaDB collection được cache ở module level. Đây là "
+                 "tối ưu thuần hiệu năng: cùng model, cùng vector, **không làm đổi thứ hạng** nên "
+                 "các số liệu ở trên vẫn còn hiệu lực.")
+    lines.append("5. ✅ **Supervisor + workers song song** (`src/supervisor.py`) — chạy đồng thời "
+                 "dense / sparse / HyDE / query-expansion rồi gộp bằng RRF. Đây là nhánh retrieval "
+                 "MỚI, chưa được đo trong bảng A/B trên; cần thêm làm config C rồi chạy lại eval.")
     return "\n".join(lines)
 
 

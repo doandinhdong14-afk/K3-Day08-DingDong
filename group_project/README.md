@@ -70,32 +70,66 @@ Xem code mẫu (DeepEval/RAGAS/TruLens) chi tiết trong `README.md` gốc mục
 ## Kiến Trúc Hệ Thống
 
 ```
-[Vẽ diagram kiến trúc ở đây]
+   Streamlit  app.py
+        │  câu hỏi + lịch sử chat
+        ▼
+   Task 10  condense_question()          ← biến câu follow-up thành câu độc lập
+        │
+        ▼
+   Task 9  retrieve()  ──────────────────────────────────────────┐
+        │                                                        │
+        ├─ Task 5  Semantic search  (bge-m3 → ChromaDB, cosine)  │
+        ├─ Task 6  Lexical search   (BM25 Okapi)                 │  song song ở
+        ├─ Task 5  HyDE             (tài liệu giả định)          │  supervisor.py
+        └─ Query Expansion          (n biến thể câu hỏi)         │
+                             │                                   │
+                             ▼                                   │
+        Task 7  RRF fusion  Σ 1/(60+rank)  →  Rerank             │
+                             │                                   │
+              cosine gốc < 0.48 ? ──► Task 8  PageIndex vectorless
+                             │                                   │
+                             ▼                                   │
+                     top_k chunks  ◄──────────────────────────────┘
+                             │
+                             ▼
+   Task 10  reorder_for_llm() [1,3,5,4,2]  →  prompt + citation  →  LLM
+                             │
+                             ▼
+   Streamlit: câu trả lời + expander "Nguồn tham khảo" (file, score, nhánh retrieval)
 ```
+
+Chi tiết đầy đủ (ingestion + evaluation) xem `README.md` ở thư mục gốc, mục
+**Kiến Trúc Hệ Thống**.
 
 ---
 
 ## Phân Công Công Việc
 
-| Thành viên | MSSV | Nhiệm vụ | Trạng thái |
-|-----------|------|----------|------------|
-| | | | |
-| | | | |
-| | | | |
-| | | | |
+> Suy ra từ lịch sử commit. **Cột MSSV cần các thành viên tự điền trước khi nộp.**
+
+| Thành viên (GitHub) | MSSV | Vai trò | Nhiệm vụ | Trạng thái |
+|---|---|---|---|---|
+| `Tran Hoai Nam` | _(điền)_ | Role 2 — Data & Pipeline | Task 1, 4, 7, 9 + tích hợp Streamlit | ✅ |
+| `higo-ai` | _(điền)_ | Role 3 — Retrieval & Fallback | Task 2, 5 (HyDE), 7 (RRF), 8 (PageIndex) | ✅ |
+| `Dienamyte` | _(điền)_ | Role 4 — Evaluation & QA | `golden_dataset.json`, `eval_pipeline.py`, `results.md` | ✅ |
+| `MinhCris` | _(điền)_ | Role 1 — Team Leader & Architect | `supervisor.py`, Task 10, ghép code, rà soát | ✅ |
 
 ---
 
 ## Hướng Dẫn Chạy
 
 ```bash
-# Cài đặt dependencies
+# Cài đặt dependencies (Python 3.11)
 pip install -r requirements.txt
 
-# Chạy app
+# Build vector store — BẮT BUỘC trước khi mở app
+python -m src.task4_chunking_indexing
+
+# Chạy chatbot
 streamlit run app.py
-# hoặc
-chainlit run app.py
+
+# Chạy evaluation RAGAS (cần GEMINI_API_KEY trong .env)
+python -m group_project.evaluation.eval_pipeline
 ```
 
 ---

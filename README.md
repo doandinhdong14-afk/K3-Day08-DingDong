@@ -549,34 +549,144 @@ run_dashboard()
 
 ### Kiến Trúc Hệ Thống
 
+**A. Ingestion pipeline (chạy offline, 1 lần)**
+
 ```
-[Vẽ diagram kiến trúc ở đây]
+Task 1  PDF/DOCX chính sách ──┐
+        data/landing/legal/    │
+                               ├──► Task 3  MarkItDown ──►  data/standardized/
+Task 2  Crawl4AI (8 bài RMIT) ─┘                                  │  (13 file .md)
+        data/landing/news/                                        │
+                                                                  ▼
+                              Task 4  RecursiveCharacterTextSplitter (500 / 50)
+                                                                  │  573 chunks
+                                                                  ▼
+                                          BAAI/bge-m3  (1024 chiều, multilingual)
+                                                                  │
+                                                                  ▼
+                                          ChromaDB  chroma_db/  (cosine space)
+```
+
+**B. Query pipeline (chạy mỗi câu hỏi)**
+
+```
+                        Câu hỏi của sinh viên
+                                 │
+              ┌──────────────────┴──────────────────┐
+              │  Task 10: condense_question()       │  ← chỉ khi có lịch sử chat
+              │  "Thế còn học bổng?" → câu độc lập  │
+              └──────────────────┬──────────────────┘
+                                 ▼
+        ┌────────────────────────────────────────────────┐
+        │  Task 9 retrieve()   /   supervisor_retrieve()  │
+        │                                                 │
+        │   Task 5 Semantic (bge-m3, cosine) ──┐          │
+        │   Task 6 Lexical  (BM25 Okapi)     ──┤          │
+        │   [+ HyDE, + Query Expansion]      ──┘          │  ← nhánh Supervisor
+        │                    │                            │     (song song)
+        │                    ▼                            │
+        │   Task 7  RRF fusion   score = Σ 1/(60 + rank)  │
+        │                    │                            │
+        │                    ▼                            │
+        │   Task 7  Rerank  (rrf | mmr | cross-encoder)   │
+        └────────────────────┬────────────────────────────┘
+                             │
+              cosine GỐC tốt nhất < 0.48 ?
+                    │                    │
+                   có                  không
+                    ▼                    ▼
+        Task 8 PageIndex          top_k chunks
+        (vectorless fallback)     source = "hybrid"
+                    │                    │
+                    └────────┬───────────┘
+                             ▼
+        Task 10  reorder_for_llm()  [1,3,5,4,2] — chống lost-in-the-middle
+                             │
+                             ▼
+        Task 10  SYSTEM_PROMPT + lịch sử + context  →  LLM
+                 (Gemini → OpenRouter → OpenAI, temp 0.3 / top_p 0.8)
+                             │
+                             ▼
+              Câu trả lời có citation  +  danh sách nguồn
+                             │
+                             ▼
+                  app.py (Streamlit)  ─────►  Người dùng
+```
+
+**C. Evaluation (offline)**
+
+```
+golden_dataset.json (15 Q&A)
+        │
+        ├──► Config A: hybrid + RRF rerank  ─┐
+        │                                     ├──► RAGAS (4 metrics) ──► results.md
+        └──► Config B: dense-only            ─┘     judge: gemini-flash-lite
+                                                    embeddings: bge-m3 (local)
 ```
 
 ---
 
 ### Phân Công Công Việc
 
-| Thành viên | MSSV | Nhiệm vụ | Trạng thái |
-|-----------|------|----------|------------|
-| | | | |
-| | | | |
-| | | | |
-| | | | |
+> Bảng dưới suy ra từ lịch sử commit của repo. **Cột MSSV cần các thành viên tự điền
+> trước khi nộp.**
+
+| Thành viên (GitHub) | MSSV | Vai trò | Nhiệm vụ | Trạng thái |
+|---|---|---|---|---|
+| `Tran Hoai Nam` | _(điền)_ | Role 2 — Data & Pipeline | Task 1 (thu thập PDF), Task 4 (chunking + ChromaDB), Task 7 (reranking), Task 9 (pipeline + fallback), tích hợp Streamlit | ✅ Hoàn thành |
+| `higo-ai` | _(điền)_ | Role 3 — Retrieval & Fallback | Task 2 (Crawl4AI), Task 5 (semantic + HyDE), Task 7 (RRF), Task 8 (PageIndex vectorless) | ✅ Hoàn thành |
+| `Dienamyte` | _(điền)_ | Role 4 — Evaluation & QA | `golden_dataset.json` (15 Q&A), `eval_pipeline.py` (RAGAS), báo cáo `results.md` + so sánh A/B | ✅ Hoàn thành |
+| `MinhCris` | _(điền)_ | Role 1 — Team Leader & RAG Architect | Ghép code tổng hợp, `src/supervisor.py`, Task 10 (generation có citation), rà soát cuối | ✅ Hoàn thành |
 
 ---
 
 ### Hướng Dẫn Chạy
 
 ```bash
-# Cài đặt dependencies
-pip install -r requirements.txt
+# 0. Môi trường ảo (Python 3.11 — ragas chưa build được trên 3.13/3.14)
+python -m venv .venv
+.venv\Scripts\activate            # Windows
+# source .venv/bin/activate       # macOS / Linux
 
-# Chạy app
+# 1. Dependencies
+pip install -r requirements.txt
+# Nếu pip báo lỗi SSL "unable to get local issuer certificate" (mạng có proxy TLS):
+#   pip install --use-feature=truststore -r requirements.txt
+
+# 2. API keys
+cp .env.example .env              # rồi điền GEMINI_API_KEY hoặc OPENROUTER_API_KEY
+
+# 3. Build vector store — BẮT BUỘC chạy trước khi mở app.
+#    Lần đầu sẽ tải model bge-m3 (~2.2GB).
+python -m src.task4_chunking_indexing
+
+# 4. Chạy chatbot
 streamlit run app.py
-# hoặc
-chainlit run app.py
 ```
+
+**Các lệnh khác:**
+
+```bash
+# Thu thập lại dữ liệu (Task 1-3) — chỉ chạy khi muốn đổi corpus
+python -m src.task1_collect_legal_docs
+python -m src.task2_crawl_news          # cần: playwright install chromium
+python -m src.task3_convert_markdown
+
+# Thử từng module retrieval
+python -m src.task5_semantic_search
+python -m src.task6_lexical_search
+python -m src.task9_retrieval_pipeline
+python -m src.supervisor                # pattern Supervisor + workers song song
+
+# Chấm điểm Task 1-10
+pytest tests/ -v
+
+# Chạy lại evaluation RAGAS (cần GEMINI_API_KEY)
+python -m group_project.evaluation.eval_pipeline
+```
+
+> ⚠️ Đổi corpus hoặc đổi `CHUNK_SIZE`/`EMBEDDING_MODEL` thì phải **xoá `chroma_db/`**
+> rồi chạy lại bước 3 — nếu không, chunk cũ và mới nằm lẫn trong cùng collection.
 
 ---
 

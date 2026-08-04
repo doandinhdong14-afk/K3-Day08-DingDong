@@ -14,6 +14,11 @@ Cài đặt:
                                    # "BrowserType.launch: Executable doesn't exist"
 
 Gợi ý chủ đề: thông báo tuyển sinh, sự kiện, dịch vụ thư viện, hỗ trợ sinh viên, học bổng.
+
+⚠️ Nguyên tắc quan trọng: KHÔNG ghi dữ liệu bịa (mock/placeholder) vào corpus khi crawl
+thất bại. Corpus RAG chỉ được chứa nội dung thật — nếu lẫn văn bản tự chế, chatbot sẽ
+trích dẫn một "quy định" không tồn tại và toàn bộ điểm faithfulness của eval mất ý nghĩa.
+Crawl lỗi thì giữ nguyên file cũ (nếu có) và báo lỗi ra màn hình.
 """
 
 import asyncio
@@ -29,17 +34,22 @@ def setup_directory():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
-# Danh sách URL bài viết cần crawl
+# Danh sách URL bài viết cần crawl — trang công khai RMIT Vietnam.
+# Thứ tự ở đây quyết định tên file (article_01.json ... article_08.json) và phải
+# khớp với corpus đã index + golden_dataset.json. Đổi thứ tự = đổi ánh xạ file.
 ARTICLE_URLS = [
-    "https://ntt.edu.vn/tin-tuc/huong-dan-dang-ky-mon-hoc-nttu",
-    "https://ntt.edu.vn/tin-tuc/chinh-sach-hoc-bong-nam-hoc-moi-nttu",
-    "https://ntt.edu.vn/tin-tuc/dich-vu-thu-vien-truong-dh-nguyen-tat-thanh",
-    "https://ntt.edu.vn/tin-tuc/quy-dinh-phuc-khao-bai-thi-nttu",
-    "https://ntt.edu.vn/tin-tuc/huong-dan-thanh-toan-hoc-phi-truc-tuyen-nttu"
+    "https://www.rmit.edu.vn/students/my-studies/fees-and-payments",
+    "https://www.rmit.edu.vn/students/my-studies/enrolment",
+    "https://www.rmit.edu.vn/students/my-studies/rights-and-responsibilities",
+    "https://www.rmit.edu.vn/students/my-studies/graduation",
+    "https://www.rmit.edu.vn/students/my-studies/international-students",
+    "https://www.rmit.edu.vn/students/support",
+    "https://www.rmit.edu.vn/students/student-news-and-events/student-news/2026/what-is-consent-and-why-does-it-matter",
+    "https://www.rmit.edu.vn/students/student-news-and-events/student-news/2026/your-voice-matters-help-shape-your-rmit-experience-with-ses",
 ]
 
 
-async def crawl_article(url: str) -> dict:
+async def crawl_article(url: str) -> dict | None:
     """
     Crawl một bài viết và trả về dict chứa metadata + content.
 
@@ -50,77 +60,62 @@ async def crawl_article(url: str) -> dict:
             "date_crawled": str (ISO format),
             "content_markdown": str
         }
+        hoặc None nếu crawl thất bại (bị chặn, timeout, trang rỗng).
     """
     from crawl4ai import AsyncWebCrawler
-    
-    url_to_mock = {
-        "dang-ky-mon-hoc": {
-            "title": "Hướng dẫn đăng ký môn học và điều chỉnh học phần NTTU",
-            "content": "Sinh viên Đại học Nguyễn Tất Thành đăng ký môn học trực tuyến qua cổng thông tin đào tạo. Mỗi học kỳ sinh viên được đăng ký tối thiểu 12 tín chỉ và tối đa 25 tín chỉ. Hạn hủy đăng ký hoặc rút môn học là trước khi bắt đầu tuần học thứ 2 của học kỳ."
-        },
-        "hoc-bong": {
-            "title": "Chính sách học bổng khuyến khích học tập và hỗ trợ sinh viên khó khăn NTTU",
-            "content": "Trường ĐH Nguyễn Tất Thành công bố quỹ học bổng trị giá hàng chục tỷ đồng cho năm học mới. Gồm học bổng khuyến khích học tập dành cho sinh viên có thành tích xuất sắc (GPA từ 3.2 trở lên) và học bổng vượt khó dành cho sinh viên nghèo học giỏi."
-        },
-        "thu-vien": {
-            "title": "Dịch vụ thư viện và quy trình mượn trả tài liệu học tập NTTU",
-            "content": "Thư viện Đại học Nguyễn Tất Thành cung cấp hàng ngàn đầu sách giáo trình và tài liệu nghiên cứu. Sinh viên có thể mượn sách tối đa 14 ngày, gia hạn thêm tối đa 7 ngày thông qua tài khoản thư viện trực tuyến. Trả sách muộn sẽ bị phạt theo quy định."
-        },
-        "phuc-khao": {
-            "title": "Quy trình nộp đơn phúc khảo bài thi kết thúc học phần NTTU",
-            "content": "Sau khi công bố điểm thi kết thúc môn, sinh viên có quyền nộp đơn xin chấm phúc khảo bài thi trong vòng 7 ngày làm việc. Lệ phí chấm phúc khảo sẽ được hoàn lại nếu điểm số sau chấm phúc khảo thay đổi theo hướng tăng lên."
-        },
-        "hoc-phi": {
-            "title": "Hướng dẫn đóng học phí trực tuyến và chính sách hỗ trợ nộp chậm NTTU",
-            "content": "Nhà trường hướng dẫn sinh viên nộp học phí trực tuyến thông qua cổng thanh toán VNPay hoặc chuyển khoản ngân hàng. Trường hợp sinh viên có hoàn cảnh khó khăn có thể làm đơn xin gia hạn nộp học phí tối đa 4 tuần."
-        }
-    }
-    
-    # Tìm kiếm dữ liệu giả lập phù hợp
-    mock_data = {
-        "title": "Thông tin dịch vụ đào tạo NTTU",
-        "content": "Nội dung thông tin về các hoạt động hỗ trợ học tập, sinh hoạt và các chính sách đào tạo dành cho sinh viên Đại học Nguyễn Tất Thành."
-    }
-    for kw, val in url_to_mock.items():
-        if kw in url.lower():
-            mock_data = val
-            break
-            
+
     try:
         async with AsyncWebCrawler() as crawler:
             result = await crawler.arun(url=url)
             if result.success and result.markdown:
+                title = url.rstrip("/").split("/")[-1]
+                if result.metadata:
+                    title = result.metadata.get("title") or title
                 return {
                     "url": url,
-                    "title": result.metadata.get("title", mock_data["title"]) if result.metadata else mock_data["title"],
+                    "title": title,
                     "date_crawled": datetime.now().isoformat(),
-                    "content_markdown": result.markdown
+                    "content_markdown": str(result.markdown),
                 }
+            print("  [WARNING] Trang tra ve rong hoac crawl khong thanh cong.")
     except Exception as e:
         err_msg = str(e).encode("ascii", errors="ignore").decode("ascii")
-        print(f"  [WARNING] Crawling failed/blocked for {url} ({err_msg}). Using robust fallback data.")
-        
-    return {
-        "url": url,
-        "title": mock_data["title"],
-        "date_crawled": datetime.now().isoformat(),
-        "content_markdown": f"# {mock_data['title']}\n\n{mock_data['content']}"
-    }
+        print(f"  [ERROR] Crawl that bai: {err_msg}")
+
+    return None
 
 
 async def crawl_all():
-    """Crawl toàn bộ bài viết trong ARTICLE_URLS."""
+    """
+    Crawl toàn bộ bài viết trong ARTICLE_URLS.
+
+    Bài nào crawl lỗi thì GIỮ NGUYÊN file JSON cũ (nếu đã có từ lần chạy trước)
+    thay vì ghi đè bằng dữ liệu rỗng/giả.
+    """
     setup_directory()
 
+    ok, kept, failed = 0, 0, 0
     for i, url in enumerate(ARTICLE_URLS, 1):
         print(f"[{i}/{len(ARTICLE_URLS)}] Crawling: {url}")
         article = await crawl_article(url)
+        filepath = DATA_DIR / f"article_{i:02d}.json"
 
-        # Lưu file JSON
-        filename = f"article_{i:02d}.json"
-        filepath = DATA_DIR / filename
-        filepath.write_text(json.dumps(article, ensure_ascii=False, indent=2), encoding="utf-8")
-        print(f"  [OK] Saved: {filepath}")
+        if article:
+            filepath.write_text(
+                json.dumps(article, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
+            print(f"  [OK] Saved: {filepath.name} ({len(article['content_markdown'])} chars)")
+            ok += 1
+        elif filepath.exists():
+            print(f"  [KEEP] Giu nguyen ban crawl truoc do: {filepath.name}")
+            kept += 1
+        else:
+            print(f"  [SKIP] Khong co du lieu cho {filepath.name} - can crawl lai.")
+            failed += 1
+
+    print(f"\n[TONG KET] Crawl moi: {ok} | Giu ban cu: {kept} | Thieu: {failed}")
+    if ok + kept < 5:
+        print("[CANH BAO] Task 2 yeu cau toi thieu 5 bai viet trong data/landing/news/.")
 
 
 if __name__ == "__main__":
