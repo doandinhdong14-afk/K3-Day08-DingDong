@@ -36,12 +36,12 @@ except ImportError:
 # =============================================================================
 
 # top_k: Số chunks đưa vào context
-# Chọn 5 vì: đủ evidence mà không quá dài gây lost in the middle
-TOP_K = 5
+# Chọn 3 vì: đủ evidence mà không quá dài gây lost in the middle
+TOP_K = 3
 
 # top_p (nucleus sampling): Xác suất tích luỹ cho token generation
-# Chọn 0.9 vì: đủ diverse nhưng không quá random
-TOP_P = 0.9
+# Chọn 0.8 vì: trung tính, không quá sáng tạo (0.9-1.0) nhưng cũng không quá an toàn (0.5-0.7)
+TOP_P = 0.8
 
 # temperature: Độ ngẫu nhiên của output
 # Chọn 0.3 vì: RAG cần factual, ít sáng tạo

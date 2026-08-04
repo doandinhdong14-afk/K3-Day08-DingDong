@@ -16,7 +16,7 @@ BM25 hoạt động thế nào:
 """
 
 CORPUS: list[dict] = []
-
+import task4_chunking_indexing as tas_chunk  # để import load_documents và chunk_documents
 
 
 def get_corpus() -> list[dict]:
@@ -47,7 +47,7 @@ def build_bm25_index(corpus: list[dict]):
     return bm25
 
 
-def lexical_search(query: str, top_k: int = 10) -> list[dict]:
+def lexical_search(query: str, top_k: int = 5) -> list[dict]:
     """
     Tìm kiếm từ khóa sử dụng BM25.
 
