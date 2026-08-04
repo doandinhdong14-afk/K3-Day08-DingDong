@@ -131,7 +131,9 @@ def generate_with_citation(query: str, top_k: int = TOP_K) -> dict:
             api_key=gemini_key,
             base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
         )
-        for model_name in ["gemini-2.0-flash-exp", "gemini-1.5-flash-8b", "gemini-2.0-flash"]:
+        # Model alias "-latest" tránh việc model bị gỡ (404) khi Google retire bản cũ.
+        # gemini-2.0-* / 1.5-* đã hết vòng đời hoặc free-tier quota = 0.
+        for model_name in ["gemini-flash-lite-latest", "gemini-3.5-flash-lite", "gemini-2.5-flash"]:
             try:
                 response = client.chat.completions.create(
                     model=model_name,

@@ -16,7 +16,6 @@ BM25 hoạt động thế nào:
 """
 
 CORPUS: list[dict] = []
-import task4_chunking_indexing as tas_chunk  # để import load_documents và chunk_documents
 
 
 def get_corpus() -> list[dict]:
@@ -25,11 +24,14 @@ def get_corpus() -> list[dict]:
     if not CORPUS:
         try:
             from src.task4_chunking_indexing import load_documents, chunk_documents
-            docs = load_documents()
-            if docs:
-                CORPUS = chunk_documents(docs)
-        except Exception:
-            CORPUS = []
+        except ImportError:
+            # Khi chạy trực tiếp `python src/task6_lexical_search.py` thì sys.path[0]
+            # là src/, không có package `src` → import theo tên module.
+            from task4_chunking_indexing import load_documents, chunk_documents
+
+        docs = load_documents()
+        if docs:
+            CORPUS = chunk_documents(docs)
     return CORPUS
 
 

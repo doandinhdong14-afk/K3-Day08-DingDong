@@ -1,0 +1,468 @@
+{
+  "A_hybrid_rerank": {
+    "config": {
+      "label": "Hybrid (dense + BM25) + RRF rerank",
+      "mode": "hybrid",
+      "top_k": 5,
+      "use_reranking": true
+    },
+    "scores": {
+      "faithfulness": 0.6607142857142857,
+      "answer_relevancy": 0.6561594328422248,
+      "context_recall": 0.6785714285714286,
+      "context_precision": 0.4583333332875
+    },
+    "nan_counts": {
+      "faithfulness": 1,
+      "answer_relevancy": 2,
+      "context_recall": 1,
+      "context_precision": 1
+    },
+    "source_recall": 0.9333333333333333,
+    "rows": [
+      {
+        "id": "Q01",
+        "question": "Sinh viên RMIT có thể thanh toán học phí trực tuyến bằng những phương thức nào?",
+        "answer": "Sinh viên RMIT có thể thanh toán học phí trực tuyến thông qua ba phương thức sau:\n1. Thanh toán qua trang thanh toán của RMIT [hoc-phi-va-cac-khoan-thu.md, Type: legal].\n2. Thanh toán qua trang myRMIT [hoc-phi-va-cac-khoan-thu.md, Type: legal].\n3. Thanh toán qua kênh ngân hàng trực tuyến Vietcombank-iB@NKING (phương thức này chỉ áp dụng cho người dùng VCB-iB@nking) [hoc-phi-va-cac-khoan-thu.md, Type: legal].",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "article_01.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Có ba phương thức thanh toán trực tuyến: trang thanh toán của RMIT (RMIT payments), trang myRMIT, và kênh ngân hàng trực tuyến Vietcombank-iB@NKING. Phương thức Vietcombank-iB@NKING chỉ áp dụng cho chủ tài khoản Vietcombank có sử dụng dịch vụ VCB-iB@nking.",
+        "expected_source": "hoc-phi-va-cac-khoan-thu.md"
+      },
+      {
+        "id": "Q02",
+        "question": "Khi chuyển khoản đóng học phí thì cần ghi những thông tin gì trên nội dung chuyển khoản?",
+        "answer": "Khi thực hiện chuyển khoản đóng học phí, bạn cần cung cấp các thông tin chi tiết sau đây trên nội dung chuyển khoản:\n\n1. Họ và tên sinh viên (Student’s full name) [Document 1, 3]\n2. Mã số sinh viên (hoặc ngày sinh nếu chưa có mã số sinh viên) [Student ID (or birth date only if student ID has not been issued)] [Document 1, 3]\n3. Chương trình và Chi tiết khoản phí cần nộp (Ví dụ: “Phí đặt cọc”, “Học phí” hoặc “Phí ký túc xá”) [Program and Details of fees (E.g. “Deposit”, “Tuition fees” or “Accommodation fees”)] [Document 1, 3]",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "Dangki hoc phan.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Cần ghi ba thông tin: họ và tên sinh viên; mã số sinh viên (hoặc ngày sinh nếu chưa được cấp mã số sinh viên); chương trình học và chi tiết khoản phí cần nộp, ví dụ phí đặt cọc, học phí hoặc phí ký túc xá.",
+        "expected_source": "hoc-phi-va-cac-khoan-thu.md"
+      },
+      {
+        "id": "Q03",
+        "question": "Trả sách trễ hạn ở thư viện RMIT bị phạt bao nhiêu tiền một ngày?",
+        "answer": "Theo quy định, phí phạt khi trả sách trễ hạn ở thư viện là 5,000đ cho mỗi ngày trễ hạn đối với một quyển sách [hoc-phi-va-cac-khoan-thu.md, Document 1].",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Phí phạt là 5.000 VNĐ cho mỗi ngày trễ hạn của mỗi tài liệu. Người sử dụng thư viện sẽ không được mượn tiếp tài liệu cho đến khi thanh toán xong các khoản phí phạt trước đó.",
+        "expected_source": "hoc-phi-va-cac-khoan-thu.md"
+      },
+      {
+        "id": "Q04",
+        "question": "Nếu sinh viên rút môn học sau tuần thứ tư của học kỳ thì hậu quả là gì?",
+        "answer": "Dựa trên các tài liệu được cung cấp, hậu quả khi sinh viên rút môn học sau tuần thứ tư của học kỳ được quy định tùy thuộc vào thời điểm cụ thể như sau:\n\n* **Từ sau ngày Thứ Sáu của tuần thứ tư cho đến hết ngày Thứ Sáu của tuần thứ tám:** Sinh viên vẫn phải đóng toàn bộ phí của môn học xin rút. Môn học sẽ được ghi dưới dạng Rút môn (WDR) và không được tính vào điểm GPA [Document 4, Document 5].\n* **Sau ngày Thứ Sáu của tuần thứ tám:** Toàn bộ phí của môn học xin rút vẫn sẽ được áp dụng, đồng thời sinh viên sẽ bị nhận điểm Rớt (NN). Môn học bị rớt này sẽ được đưa vào bảng điểm của sinh viên [Document 2].",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Nếu rút môn sau ngày thứ Sáu tuần thứ tư đến hết ngày thứ Sáu tuần thứ tám, sinh viên vẫn phải chịu toàn bộ học phí của môn học đó. Môn học sẽ được ghi nhận là WDR (Withdrawal) và không được tính vào điểm GPA. Nếu rút trước hoặc trong tuần thứ tư thì được miễn phí trễ hạn thay đổi đăng ký môn học.",
+        "expected_source": "hoc-phi-va-cac-khoan-thu.md"
+      },
+      {
+        "id": "Q05",
+        "question": "Sinh viên có thể thanh toán học phí bằng thẻ tín dụng ở đâu?",
+        "answer": "Sinh viên có thể thanh toán bằng thẻ tín dụng tại quầy Thu ngân của cơ sở Nam Sài Gòn, cơ sở Hà Nội hoặc cơ sở Đà Nẵng [Document 2 | Source: hoc-phi-va-cac-khoan-thu.md].",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Thanh toán bằng thẻ tín dụng được thực hiện tại quầy thu ngân của cơ sở Nam Sài Gòn, cơ sở Hà Nội hoặc cơ sở Đà Nẵng.",
+        "expected_source": "hoc-phi-va-cac-khoan-thu.md"
+      },
+      {
+        "id": "Q06",
+        "question": "Sinh viên nhận học bổng RMIT phải duy trì GPA tối thiểu bao nhiêu để không bị rút học bổng?",
+        "answer": "Tôi không thể xác minh thông tin này từ nguồn hiện có. Các tài liệu cung cấp chỉ quy định về khối lượng học tập tối thiểu cần duy trì mỗi học kỳ đối với người nhận học bổng [dieu-khoan-hoc-bong.md], nhưng không đề cập đến mức GPA tối thiểu phải duy trì để không bị rút học bổng.",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "dieu-khoan-hoc-bong.md",
+          "Dangki hoc phan.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Phải duy trì GPA tích lũy tối thiểu 2.0. Riêng người nhận RMIT Vietnam Opportunity Scholarship thì mức tối thiểu là 1.0. Không đạt mức này là một trong các căn cứ để trường ngừng hoặc rút học bổng.",
+        "expected_source": "dieu-khoan-hoc-bong.md"
+      },
+      {
+        "id": "Q07",
+        "question": "Người nhận học bổng phải đăng ký tối thiểu bao nhiêu tín chỉ mỗi học kỳ?",
+        "answer": "Dựa trên các tài liệu được cung cấp, quy định về số tín chỉ tối thiểu mỗi học kỳ đối với người nhận học bổng như sau:\n\n* Đối với chương trình bậc đại học, người nhận học bổng phải duy trì việc đăng ký toàn thời gian tương đương ít nhất **36 tín chỉ** mỗi học kỳ [dieu-khoan-hoc-bong.md].\n* Đối với chương trình sau đại học, người nhận học bổng phải duy trì ít nhất **24 tín chỉ** mỗi học kỳ [dieu-khoan-hoc-bong.md].\n* Riêng đối với người nhận học bổng RMIT Vietnam Opportunity Scholarship, mức yêu cầu là duy trì việc đăng ký tương đương ít nhất **24 tín chỉ** mỗi học kỳ [dieu-khoan-hoc-bong.md].",
+        "retrieved_sources": [
+          "Dangki hoc phan.md",
+          "Dangki hoc phan.md",
+          "dieu-khoan-hoc-bong.md",
+          "Dangki hoc phan.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Người nhận học bổng phải duy trì việc học toàn thời gian tương đương tối thiểu 36 tín chỉ mỗi học kỳ đối với chương trình đại học, và tối thiểu 24 tín chỉ mỗi học kỳ đối với chương trình sau đại học. Người nhận RMIT Vietnam Opportunity Scholarship phải duy trì tối thiểu 24 tín chỉ mỗi học kỳ. Trong trường hợp đặc biệt, người nhận có thể xin phép giảm khối lượng học.",
+        "expected_source": "dieu-khoan-hoc-bong.md"
+      },
+      {
+        "id": "Q08",
+        "question": "Tiền trợ cấp hàng tháng của học bổng được chuyển vào tài khoản khi nào?",
+        "answer": "Dựa trên tài liệu được cung cấp, tiền trợ cấp hàng tháng được chuyển vào tài khoản ngân hàng đã chỉ định của người nhận [dieu-khoan-hoc-bong.md]. Tuy nhiên, đoạn văn bản trong ngữ cảnh không nêu rõ cụ thể ngày hay thời điểm trong tháng mà tiền trợ cấp được chuyển vào tài khoản [dieu-khoan-hoc-bong.md]. \n\nTôi không thể xác minh thông tin này từ nguồn hiện có.",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "dieu-khoan-hoc-bong.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "dieu-khoan-hoc-bong.md"
+        ],
+        "ground_truth": "Trợ cấp hàng tháng được chuyển vào tài khoản ngân hàng đã đăng ký chậm nhất vào ngày thứ Sáu của tuần thứ hai trong tháng. Người nhận phải thông báo cho trường là đã nhận được trợ cấp trước ngày thứ Ba của tuần thứ ba trong tháng, nếu không việc chi trả tháng kế tiếp có thể bị chậm hoặc ngừng.",
+        "expected_source": "dieu-khoan-hoc-bong.md"
+      },
+      {
+        "id": "Q09",
+        "question": "Học bổng RMIT có được quy đổi thành tiền mặt hoặc chuyển nhượng cho người khác không?",
+        "answer": "Tôi không thể xác minh thông tin này từ nguồn hiện có.",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Không. Học bổng không được quy đổi thành tiền mặt hoặc chuyển nhượng trong bất kỳ trường hợp nào. Ngoài ra mỗi sinh viên chỉ được nhận tối đa một học bổng học phí tại một thời điểm.",
+        "expected_source": "dieu-khoan-hoc-bong.md"
+      },
+      {
+        "id": "Q10",
+        "question": "Giờ hoạt động của khuôn viên cơ sở Nam Sài Gòn là mấy giờ?",
+        "answer": "Tôi không thể xác minh thông tin này từ nguồn hiện có.",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "gio-mo-cua-co-so-sgs.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "gio-mo-cua-co-so-sgs.md"
+        ],
+        "ground_truth": "Khuôn viên mở cửa từ thứ Hai đến thứ Sáu 7.00am - 9.00pm, thứ Bảy và Chủ Nhật 7.00am - 6.00pm. Riêng tuần 10, 11 và 12 thì mở cửa từ thứ Hai đến Chủ Nhật 7.00am - 9.00pm. Các ngày lễ khuôn viên đóng cửa.",
+        "expected_source": "gio-mo-cua-co-so-sgs.md"
+      },
+      {
+        "id": "Q11",
+        "question": "Active Hub ở tòa nhà 10 mở cửa vào những khung giờ nào và liên hệ với ai?",
+        "answer": "Dựa trên tài liệu được cung cấp, Active Hub tại tòa nhà 10 (Building 10) mở cửa vào các khung giờ sau:\n* Thứ Hai đến Thứ Sáu: 7.00am - 9.00pm [gio-mo-cua-co-so-sgs.md]\n* Thứ Bảy và Chủ Nhật: 9.00am - 5.00pm [gio-mo-cua-co-so-sgs.md]\n\nNếu có thắc mắc, bạn có thể liên hệ qua địa chỉ email: activehub.sgs@rmit.edu.vn [gio-mo-cua-co-so-sgs.md].",
+        "retrieved_sources": [
+          "gio-mo-cua-co-so-sgs.md",
+          "Dangki hoc phan.md",
+          "gio-mo-cua-co-so-sgs.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "gio-mo-cua-co-so-sgs.md"
+        ],
+        "ground_truth": "Active Hub tại tòa nhà 10 mở cửa từ thứ Hai đến thứ Sáu 7.00am - 9.00pm, thứ Bảy và Chủ Nhật 9.00am - 5.00pm. Mọi thắc mắc liên hệ qua email activehub.sgs@rmit.edu.vn.",
+        "expected_source": "gio-mo-cua-co-so-sgs.md"
+      },
+      {
+        "id": "Q12",
+        "question": "Sinh viên quốc tế có thể mua eSIM từ những nhà cung cấp nào?",
+        "answer": "Dựa trên tài liệu được cung cấp, sinh viên quốc tế có thể lựa chọn mua eSIM từ các nhà cung cấp địa phương tại Việt Nam hoặc từ các nhà cung cấp quốc tế [Document 3].",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "huong-dan-esim-sinh-vien-quoc-te.md"
+        ],
+        "ground_truth": "Có thể chọn nhà cung cấp quốc tế như Airalo, Holafly, Nomad; hoặc nhà cung cấp nội địa Việt Nam như Viettel, Vinaphone, Mobiphone. Có thể thanh toán trực tuyến bằng thẻ tín dụng, PayPal, Apple Pay hoặc Google Pay.",
+        "expected_source": "huong-dan-esim-sinh-vien-quoc-te.md"
+      },
+      {
+        "id": "Q13",
+        "question": "Sau khi mua eSIM online và nhận được mã QR thì có nên kích hoạt ngay không?",
+        "answer": "Sau khi mua eSIM online và nhận được mã QR, bạn không nên kích hoạt ngay. Thay vào đó, bạn chỉ nên lưu lại hình ảnh mã QR hoặc thông tin kích hoạt chi tiết [huong-dan-esim-sinh-vien-quoc-te.md].",
+        "retrieved_sources": [
+          "huong-dan-esim-sinh-vien-quoc-te.md",
+          "huong-dan-esim-sinh-vien-quoc-te.md",
+          "huong-dan-esim-sinh-vien-quoc-te.md",
+          "huong-dan-esim-sinh-vien-quoc-te.md",
+          "Dangki hoc phan.md"
+        ],
+        "ground_truth": "Không nên kích hoạt ngay. Sau khi nhận email chứa mã QR hoặc thông tin kích hoạt, sinh viên chỉ nên lưu lại hình ảnh mã QR hoặc thông tin đó một cách an toàn, và chỉ kích hoạt khi đã đến Việt Nam.",
+        "expected_source": "huong-dan-esim-sinh-vien-quoc-te.md"
+      },
+      {
+        "id": "Q14",
+        "question": "Mỗi học kỳ sinh viên phải đăng ký tối thiểu và tối đa bao nhiêu tín chỉ?",
+        "answer": "Mỗi học kỳ, sinh viên phải đăng ký tối thiểu 10 tín chỉ và được phép đăng ký tối đa 22 tín chỉ [Dangki hoc phan.md].",
+        "retrieved_sources": [
+          "Dangki hoc phan.md",
+          "Dangki hoc phan.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "Dangki hoc phan.md",
+          "dieu-khoan-hoc-bong.md"
+        ],
+        "ground_truth": "Mỗi học kỳ sinh viên phải đăng ký tối thiểu 10 tín chỉ và được phép đăng ký tối đa 22 tín chỉ. Sinh viên đăng ký ít hơn số tín chỉ tối thiểu cần làm đơn xin phép nêu rõ lý do chính đáng và nộp tại văn phòng Khoa/Viện quản lý để tránh bị cảnh báo học vụ.",
+        "expected_source": "Dangki hoc phan.md"
+      },
+      {
+        "id": "Q15",
+        "question": "Điều kiện để được rút bớt học phần khi lớp đã ở trạng thái Chỉ đăng ký hoặc Đã khóa là gì?",
+        "answer": "Tôi không thể xác minh thông tin này từ nguồn hiện có.",
+        "retrieved_sources": [
+          "Dangki hoc phan.md",
+          "Dangki hoc phan.md",
+          "Dangki hoc phan.md",
+          "Dangki hoc phan.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Sinh viên phải làm đơn rút học phần trực tuyến tại Cổng dịch vụ người học và thỏa các điều kiện: có lý do chính đáng; lớp học phần đã bắt đầu không quá 50% số giờ; đã hoàn thành học phí của học phần muốn rút; và tổng số tín chỉ còn lại từ 10 tín chỉ trở lên. Sinh viên không được hoàn học phí nếu rút học phần sau khi lớp học phần đã bắt đầu.",
+        "expected_source": "Dangki hoc phan.md"
+      }
+    ]
+  },
+  "B_dense_only": {
+    "config": {
+      "label": "Dense-only (semantic search, không rerank)",
+      "mode": "dense",
+      "top_k": 5,
+      "use_reranking": false
+    },
+    "scores": {
+      "faithfulness": 0.6428571428571429,
+      "answer_relevancy": 0.6782668252020014,
+      "context_recall": 0.6666666666666666,
+      "context_precision": 0.47857142852625006
+    },
+    "nan_counts": {
+      "faithfulness": 1,
+      "answer_relevancy": 0,
+      "context_recall": 0,
+      "context_precision": 1
+    },
+    "source_recall": 1.0,
+    "rows": [
+      {
+        "id": "Q01",
+        "question": "Sinh viên RMIT có thể thanh toán học phí trực tuyến bằng những phương thức nào?",
+        "answer": "Sinh viên RMIT có thể thanh toán học phí trực tuyến thông qua ba phương thức sau:\n\n1. Thanh toán qua trang thanh toán của RMIT [hoc-phi-va-cac-khoan-thu.md].\n2. Thanh toán qua trang myRMIT [hoc-phi-va-cac-khoan-thu.md].\n3. Thanh toán qua kênh ngân hàng trực tuyến Vietcombank-iB@NKING (phương thức này chỉ áp dụng cho người dùng VCB-iB@nking) [hoc-phi-va-cac-khoan-thu.md].",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "article_01.md",
+          "article_01.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Có ba phương thức thanh toán trực tuyến: trang thanh toán của RMIT (RMIT payments), trang myRMIT, và kênh ngân hàng trực tuyến Vietcombank-iB@NKING. Phương thức Vietcombank-iB@NKING chỉ áp dụng cho chủ tài khoản Vietcombank có sử dụng dịch vụ VCB-iB@nking.",
+        "expected_source": "hoc-phi-va-cac-khoan-thu.md"
+      },
+      {
+        "id": "Q02",
+        "question": "Khi chuyển khoản đóng học phí thì cần ghi những thông tin gì trên nội dung chuyển khoản?",
+        "answer": "Khi thực hiện chuyển khoản hoặc ghi nội dung trên phiếu nộp tiền, ủy nhiệm chi, bạn cần cung cấp các thông tin chi tiết sau:\n\n1. Họ và tên sinh viên (Student’s full name) [Document 1, Source: hoc-phi-va-cac-khoan-thu.md].\n2. Mã số sinh viên (hoặc ngày sinh nếu chưa có mã số sinh viên) [Document 1, Source: hoc-phi-va-cac-khoan-thu.md].\n3. Chương trình và Chi tiết khoản phí cần nộp (Ví dụ: “Phí đặt cọc”, “Học phí” hoặc “Phí ký túc xá”) [Document 1, Source: hoc-phi-va-cac-khoan-thu.md].",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Cần ghi ba thông tin: họ và tên sinh viên; mã số sinh viên (hoặc ngày sinh nếu chưa được cấp mã số sinh viên); chương trình học và chi tiết khoản phí cần nộp, ví dụ phí đặt cọc, học phí hoặc phí ký túc xá.",
+        "expected_source": "hoc-phi-va-cac-khoan-thu.md"
+      },
+      {
+        "id": "Q03",
+        "question": "Trả sách trễ hạn ở thư viện RMIT bị phạt bao nhiêu tiền một ngày?",
+        "answer": "Người sử dụng thư viện nếu không trả sách đúng hạn sẽ bị phạt 5,000đ cho mỗi ngày trễ hạn đối với một quyển sách [hoc-phi-va-cac-khoan-thu.md].",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Phí phạt là 5.000 VNĐ cho mỗi ngày trễ hạn của mỗi tài liệu. Người sử dụng thư viện sẽ không được mượn tiếp tài liệu cho đến khi thanh toán xong các khoản phí phạt trước đó.",
+        "expected_source": "hoc-phi-va-cac-khoan-thu.md"
+      },
+      {
+        "id": "Q04",
+        "question": "Nếu sinh viên rút môn học sau tuần thứ tư của học kỳ thì hậu quả là gì?",
+        "answer": "Dựa trên các tài liệu được cung cấp, nếu sinh viên rút môn học sau ngày Thứ Sáu tuần thứ tư của học kỳ (tùy thuộc vào thời điểm cụ thể sau đó), hậu quả được quy định như sau:\n\n* **Từ sau ngày Thứ Sáu tuần thứ tư đến hết ngày Thứ Sáu tuần thứ tám:** Sinh viên có thể được rút môn học nhưng phải chịu toàn bộ phí của môn học xin rút đó [Document 1, Document 2]. Môn học sẽ được ghi dưới dạng Rút môn (WDR) và không tính vào điểm GPA [Document 2].\n* **Sau ngày Thứ Sáu tuần thứ tám:** Toàn bộ phí của môn học xin rút vẫn sẽ phải thanh toán, sinh viên sẽ bị áp dụng hình phạt học thuật là điểm Rớt (NN) và môn học bị rớt sẽ được liệt kê trong bảng điểm của sinh viên [Document 1]. \n* Ngoài ra, tài liệu cũng nêu chung rằng nếu sinh viên rút môn học sau ngày Thứ Sáu tuần thứ tư cho đến khi học kỳ kết thúc, toàn bộ phí của môn học vẫn phải được thanh toán, môn học sẽ được đánh dấu là WDR (Withdrawal) và không tính vào điểm GPA [Document 5].",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Nếu rút môn sau ngày thứ Sáu tuần thứ tư đến hết ngày thứ Sáu tuần thứ tám, sinh viên vẫn phải chịu toàn bộ học phí của môn học đó. Môn học sẽ được ghi nhận là WDR (Withdrawal) và không được tính vào điểm GPA. Nếu rút trước hoặc trong tuần thứ tư thì được miễn phí trễ hạn thay đổi đăng ký môn học.",
+        "expected_source": "hoc-phi-va-cac-khoan-thu.md"
+      },
+      {
+        "id": "Q05",
+        "question": "Sinh viên có thể thanh toán học phí bằng thẻ tín dụng ở đâu?",
+        "answer": "Tôi không thể xác minh thông tin này từ nguồn hiện có.",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Thanh toán bằng thẻ tín dụng được thực hiện tại quầy thu ngân của cơ sở Nam Sài Gòn, cơ sở Hà Nội hoặc cơ sở Đà Nẵng.",
+        "expected_source": "hoc-phi-va-cac-khoan-thu.md"
+      },
+      {
+        "id": "Q06",
+        "question": "Sinh viên nhận học bổng RMIT phải duy trì GPA tối thiểu bao nhiêu để không bị rút học bổng?",
+        "answer": "Tôi không thể xác minh thông tin này từ nguồn hiện có.",
+        "retrieved_sources": [
+          "dieu-khoan-hoc-bong.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Phải duy trì GPA tích lũy tối thiểu 2.0. Riêng người nhận RMIT Vietnam Opportunity Scholarship thì mức tối thiểu là 1.0. Không đạt mức này là một trong các căn cứ để trường ngừng hoặc rút học bổng.",
+        "expected_source": "dieu-khoan-hoc-bong.md"
+      },
+      {
+        "id": "Q07",
+        "question": "Người nhận học bổng phải đăng ký tối thiểu bao nhiêu tín chỉ mỗi học kỳ?",
+        "answer": "Người nhận học bổng phải duy trì khối lượng đăng ký học tập toàn thời gian tối thiểu như sau:\n- Đối với chương trình đại học: tối thiểu 36 tín chỉ mỗi học kỳ [dieu-khoan-hoc-bong.md].\n- Đối với chương trình sau đại học: tối thiểu 24 tín chỉ mỗi học kỳ [dieu-khoan-hoc-bong.md].\n- Riêng đối với người nhận học bổng RMIT Vietnam Opportunity Scholarship: phải duy trì khối lượng đăng ký tối thiểu là 24 tín chỉ mỗi học kỳ [dieu-khoan-hoc-bong.md]. \n\nTrong những trường hợp đặc biệt, người nhận học bổng có thể nộp đơn xin phép giảm khối lượng học tập cho một giai đoạn cụ thể [dieu-khoan-hoc-bong.md].",
+        "retrieved_sources": [
+          "Dangki hoc phan.md",
+          "dieu-khoan-hoc-bong.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "Dangki hoc phan.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Người nhận học bổng phải duy trì việc học toàn thời gian tương đương tối thiểu 36 tín chỉ mỗi học kỳ đối với chương trình đại học, và tối thiểu 24 tín chỉ mỗi học kỳ đối với chương trình sau đại học. Người nhận RMIT Vietnam Opportunity Scholarship phải duy trì tối thiểu 24 tín chỉ mỗi học kỳ. Trong trường hợp đặc biệt, người nhận có thể xin phép giảm khối lượng học.",
+        "expected_source": "dieu-khoan-hoc-bong.md"
+      },
+      {
+        "id": "Q08",
+        "question": "Tiền trợ cấp hàng tháng của học bổng được chuyển vào tài khoản khi nào?",
+        "answer": "Tiền trợ cấp hàng tháng của học bổng được chuyển vào tài khoản ngân hàng do người nhận học bổng chỉ định vào ngày thứ Sáu thứ hai của tháng [Document 3 | Source: dieu-khoan-hoc-bong.md].",
+        "retrieved_sources": [
+          "dieu-khoan-hoc-bong.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "dieu-khoan-hoc-bong.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "dieu-khoan-hoc-bong.md"
+        ],
+        "ground_truth": "Trợ cấp hàng tháng được chuyển vào tài khoản ngân hàng đã đăng ký chậm nhất vào ngày thứ Sáu của tuần thứ hai trong tháng. Người nhận phải thông báo cho trường là đã nhận được trợ cấp trước ngày thứ Ba của tuần thứ ba trong tháng, nếu không việc chi trả tháng kế tiếp có thể bị chậm hoặc ngừng.",
+        "expected_source": "dieu-khoan-hoc-bong.md"
+      },
+      {
+        "id": "Q09",
+        "question": "Học bổng RMIT có được quy đổi thành tiền mặt hoặc chuyển nhượng cho người khác không?",
+        "answer": "Tôi không thể xác minh thông tin này từ nguồn hiện có.",
+        "retrieved_sources": [
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "dieu-khoan-hoc-bong.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Không. Học bổng không được quy đổi thành tiền mặt hoặc chuyển nhượng trong bất kỳ trường hợp nào. Ngoài ra mỗi sinh viên chỉ được nhận tối đa một học bổng học phí tại một thời điểm.",
+        "expected_source": "dieu-khoan-hoc-bong.md"
+      },
+      {
+        "id": "Q10",
+        "question": "Giờ hoạt động của khuôn viên cơ sở Nam Sài Gòn là mấy giờ?",
+        "answer": "Dựa trên tài liệu được cung cấp, giờ hoạt động của khuôn viên cơ sở như sau:\n\n* Từ Thứ Hai đến Thứ Sáu: 7.00 sáng - 9.00 tối [gio-mo-cua-co-so-sgs.md]\n* Thứ Bảy và Chủ Nhật: 7.00 sáng - 6.00 chiều [gio-mo-cua-co-so-sgs.md]\n* Chỉ riêng các Tuần 10, 11 và 12 (Monday-Sunday): 7.00 sáng - 9.00 tối [gio-mo-cua-co-so-sgs.md]\n* Các ngày Lễ công cộng: Khuôn viên đóng cửa (CAMPUS CLOSURE) [gio-mo-cua-co-so-sgs.md]",
+        "retrieved_sources": [
+          "gio-mo-cua-co-so-sgs.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "gio-mo-cua-co-so-sgs.md",
+          "gio-mo-cua-co-so-sgs.md",
+          "gio-mo-cua-co-so-sgs.md"
+        ],
+        "ground_truth": "Khuôn viên mở cửa từ thứ Hai đến thứ Sáu 7.00am - 9.00pm, thứ Bảy và Chủ Nhật 7.00am - 6.00pm. Riêng tuần 10, 11 và 12 thì mở cửa từ thứ Hai đến Chủ Nhật 7.00am - 9.00pm. Các ngày lễ khuôn viên đóng cửa.",
+        "expected_source": "gio-mo-cua-co-so-sgs.md"
+      },
+      {
+        "id": "Q11",
+        "question": "Active Hub ở tòa nhà 10 mở cửa vào những khung giờ nào và liên hệ với ai?",
+        "answer": "Dựa trên tài liệu được cung cấp, Active Hub tại tòa nhà 10 mở cửa vào các khung giờ sau:\n* Thứ Hai đến Thứ Sáu: 7.00am - 9.00pm [gio-mo-cua-co-so-sgs.md]\n* Thứ Bảy và Chủ Nhật: 9.00am - 5.00pm [gio-mo-cua-co-so-sgs.md]\n\nNếu có thắc mắc, bạn có thể liên hệ qua email: activehub.sgs@rmit.edu.vn [gio-mo-cua-co-so-sgs.md].",
+        "retrieved_sources": [
+          "gio-mo-cua-co-so-sgs.md",
+          "gio-mo-cua-co-so-sgs.md",
+          "gio-mo-cua-co-so-sgs.md",
+          "gio-mo-cua-co-so-sgs.md",
+          "gio-mo-cua-co-so-sgs.md"
+        ],
+        "ground_truth": "Active Hub tại tòa nhà 10 mở cửa từ thứ Hai đến thứ Sáu 7.00am - 9.00pm, thứ Bảy và Chủ Nhật 9.00am - 5.00pm. Mọi thắc mắc liên hệ qua email activehub.sgs@rmit.edu.vn.",
+        "expected_source": "gio-mo-cua-co-so-sgs.md"
+      },
+      {
+        "id": "Q12",
+        "question": "Sinh viên quốc tế có thể mua eSIM từ những nhà cung cấp nào?",
+        "answer": "Dựa trên tài liệu được cung cấp, sinh viên quốc tế có thể mua eSIM từ các nhà cung cấp dịch vụ viễn thông tại Việt Nam hoặc các nhà cung cấp quốc tế [Document 1].",
+        "retrieved_sources": [
+          "huong-dan-esim-sinh-vien-quoc-te.md",
+          "huong-dan-esim-sinh-vien-quoc-te.md",
+          "huong-dan-esim-sinh-vien-quoc-te.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Có thể chọn nhà cung cấp quốc tế như Airalo, Holafly, Nomad; hoặc nhà cung cấp nội địa Việt Nam như Viettel, Vinaphone, Mobiphone. Có thể thanh toán trực tuyến bằng thẻ tín dụng, PayPal, Apple Pay hoặc Google Pay.",
+        "expected_source": "huong-dan-esim-sinh-vien-quoc-te.md"
+      },
+      {
+        "id": "Q13",
+        "question": "Sau khi mua eSIM online và nhận được mã QR thì có nên kích hoạt ngay không?",
+        "answer": "Tôi không thể xác minh thông tin này từ nguồn hiện có.",
+        "retrieved_sources": [
+          "huong-dan-esim-sinh-vien-quoc-te.md",
+          "huong-dan-esim-sinh-vien-quoc-te.md",
+          "huong-dan-esim-sinh-vien-quoc-te.md",
+          "huong-dan-esim-sinh-vien-quoc-te.md",
+          "huong-dan-esim-sinh-vien-quoc-te.md"
+        ],
+        "ground_truth": "Không nên kích hoạt ngay. Sau khi nhận email chứa mã QR hoặc thông tin kích hoạt, sinh viên chỉ nên lưu lại hình ảnh mã QR hoặc thông tin đó một cách an toàn, và chỉ kích hoạt khi đã đến Việt Nam.",
+        "expected_source": "huong-dan-esim-sinh-vien-quoc-te.md"
+      },
+      {
+        "id": "Q14",
+        "question": "Mỗi học kỳ sinh viên phải đăng ký tối thiểu và tối đa bao nhiêu tín chỉ?",
+        "answer": "Mỗi học kỳ, sinh viên phải đăng ký tối thiểu 10 tín chỉ và được phép đăng ký tối đa 22 tín chỉ [Dangki hoc phan.md]. Trường hợp sinh viên đăng ký học phần ít hơn số tín chỉ tối thiểu quy định cần làm đơn xin phép, nêu rõ lý do chính đáng và nộp tại văn phòng Khoa/Viện quản lý để tránh bị cảnh báo học vụ [Dangki hoc phan.md].",
+        "retrieved_sources": [
+          "Dangki hoc phan.md",
+          "dieu-khoan-hoc-bong.md",
+          "Dangki hoc phan.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Mỗi học kỳ sinh viên phải đăng ký tối thiểu 10 tín chỉ và được phép đăng ký tối đa 22 tín chỉ. Sinh viên đăng ký ít hơn số tín chỉ tối thiểu cần làm đơn xin phép nêu rõ lý do chính đáng và nộp tại văn phòng Khoa/Viện quản lý để tránh bị cảnh báo học vụ.",
+        "expected_source": "Dangki hoc phan.md"
+      },
+      {
+        "id": "Q15",
+        "question": "Điều kiện để được rút bớt học phần khi lớp đã ở trạng thái Chỉ đăng ký hoặc Đã khóa là gì?",
+        "answer": "Dựa trên các tài liệu được cung cấp, điều kiện để sinh viên được rút bớt học phần khi lớp học phần (LHP) ở trạng thái “Chỉ đăng ký” hoặc “Đã khóa” bao gồm:\n\n* Có lý do chính đáng [Dangki hoc phan.md].\n* Lớp học phần đã bắt đầu không quá 50% số giờ [Dangki hoc phan.md].\n* Hoàn thành học phí học phần muốn rút (trong trường hợp LHP đã bắt đầu và sinh viên chưa đóng học phí) [Dangki hoc phan.md].\n* Tổng số tín chỉ còn lại từ 10 tín chỉ trở lên [Dangki hoc phan.md].\n* Đồng thời, sinh viên phải làm đơn rút học phần trực tuyến tại Cổng dịch vụ người học (https://hotro.ntt.edu.vn) [Dangki hoc phan.md].",
+        "retrieved_sources": [
+          "Dangki hoc phan.md",
+          "Dangki hoc phan.md",
+          "hoc-phi-va-cac-khoan-thu.md",
+          "Dangki hoc phan.md",
+          "hoc-phi-va-cac-khoan-thu.md"
+        ],
+        "ground_truth": "Sinh viên phải làm đơn rút học phần trực tuyến tại Cổng dịch vụ người học và thỏa các điều kiện: có lý do chính đáng; lớp học phần đã bắt đầu không quá 50% số giờ; đã hoàn thành học phí của học phần muốn rút; và tổng số tín chỉ còn lại từ 10 tín chỉ trở lên. Sinh viên không được hoàn học phí nếu rút học phần sau khi lớp học phần đã bắt đầu.",
+        "expected_source": "Dangki hoc phan.md"
+      }
+    ]
+  }
+}
